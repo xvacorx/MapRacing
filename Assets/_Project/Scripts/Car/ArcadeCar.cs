@@ -5,17 +5,34 @@ public class ArcadeCar : MonoBehaviour
 {
     public float topSpeed = 20f;
     public float acceleration = 60f;
-    public float turnSpeed = 150f; // Aumentado para respuesta arcade
+    public float turnSpeed = 150f;
 
     private Rigidbody rb;
     private float currentSteer;
     private float currentAccel;
 
+    [Header("Randomize Stats")]
+    public bool randomStats = false;
+
+    public float minSpeed = 15f;
+    public float maxSpeed = 50f;
+    public float minAcceleration = 50f;
+    public float maxAcceleration = 125f;
+    public float minTurnSpeed = 120f;
+    public float maxTurnSpeed = 300f;
+    private void Start()
+    {
+        if (randomStats)
+        {
+            topSpeed = Random.Range(minSpeed, maxSpeed);
+            acceleration = Random.Range(minAcceleration, maxAcceleration);
+            turnSpeed = Random.Range(minTurnSpeed, maxTurnSpeed);
+        }
+    }
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.interpolation = RigidbodyInterpolation.Interpolate;
-        // Importante: Unity 6 usa linearDamping en lugar de drag
         rb.linearDamping = 1f;
         rb.angularDamping = 2f;
     }
@@ -28,21 +45,25 @@ public class ArcadeCar : MonoBehaviour
 
     void FixedUpdate()
     {
-        // 1. Aceleración constante
         if (rb.linearVelocity.magnitude < topSpeed)
         {
             rb.AddForce(transform.forward * currentAccel * acceleration, ForceMode.Acceleration);
         }
 
-        // 2. Giro Arcade (Rotación directa para evitar que el cubo sea torpe)
         if (rb.linearVelocity.magnitude > 0.5f)
         {
             float turn = currentSteer * turnSpeed * Time.fixedDeltaTime;
             rb.MoveRotation(rb.rotation * Quaternion.Euler(0, turn, 0));
         }
 
-        // 3. Simulación de agarre (Evita que el cubo se deslice de lado)
         Vector3 lateralVel = transform.right * Vector3.Dot(rb.linearVelocity, transform.right);
         rb.AddForce(-lateralVel * 10f, ForceMode.Acceleration);
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Offroad"))
+        {
+            this.gameObject.SetActive(false);
+        }
     }
 }
