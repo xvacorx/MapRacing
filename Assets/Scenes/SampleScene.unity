@@ -287,9 +287,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: MainCar
       objectReference: {fileID: 0}
+    - target: {fileID: 6372434998662082901, guid: 586541ae388e20b45842f7544d0b2761, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 6667018010620068010, guid: 586541ae388e20b45842f7544d0b2761, type: 3}
       propertyPath: isMainCar
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6667018010620068010, guid: 586541ae388e20b45842f7544d0b2761, type: 3}
+      propertyPath: changeLineChanceValue
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
