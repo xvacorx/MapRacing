@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Car
   - Offroad
+  - FxTemporaire
+  - Mine
   layers:
   - Default
   - TransparentFX

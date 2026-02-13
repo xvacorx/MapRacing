@@ -58,6 +58,11 @@ public class ArcadeCar : MonoBehaviour
 
         Vector3 lateralVel = transform.right * Vector3.Dot(rb.linearVelocity, transform.right);
         rb.AddForce(-lateralVel * 10f, ForceMode.Acceleration);
+
+        if (rb.position.y < -20f)
+        {
+            this.gameObject.SetActive(false);
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
