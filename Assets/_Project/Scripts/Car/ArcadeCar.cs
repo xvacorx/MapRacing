@@ -66,4 +66,17 @@ public class ArcadeCar : MonoBehaviour
             this.gameObject.SetActive(false);
         }
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Car"))
+        {
+            SplinePredictorAI ai = GetComponent<SplinePredictorAI>();
+            if (ai != null)
+            {
+                ai.OnCarCollision(collision);
+                Debug.Log("Choque");
+            }
+        }
+    }
 }

@@ -73,6 +73,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarAI
   splineContainer: {fileID: 0}
   lookAheadDistance: 5
+  isMainCar: 0
+  laneOffset: 0
+  maxLaneOffset: 4
+  chaosEnabled: 1
+  changeLineEnabled: 0
+  chaosValue: 1.5
+  changeLineChanceValue: 0.01
 --- !u!33 &7755069249196706700
 MeshFilter:
   m_ObjectHideFlags: 0
