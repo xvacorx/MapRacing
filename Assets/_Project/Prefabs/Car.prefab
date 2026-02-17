@@ -98,6 +98,12 @@ MonoBehaviour:
   maxAcceleration: 75
   minTurnSpeed: 300
   maxTurnSpeed: 750
+  groundCheckPoint: {fileID: 1916407191630450410}
+  groundCheckRadius: 1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  isGrounded: 0
 --- !u!114 &6667018010620068010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116,7 +122,7 @@ MonoBehaviour:
   laneOffset: 0
   maxLaneOffset: 4
   chaosEnabled: 1
-  changeLineEnabled: 1
+  changeLineEnabled: 0
   chaosValue: 0.5
   changeLineChanceValue: 0
 --- !u!114 &8853127364394938702

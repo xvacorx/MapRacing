@@ -48,56 +48,68 @@ public class SplinePredictorAI : MonoBehaviour
     void Update()
     {
         if (splineContainer == null) return;
-
-        var spline = splineContainer.Spline;
-        SplineUtility.GetNearestPoint(spline, splineContainer.transform.InverseTransformPoint(transform.position), out float3 nearestLocal, out float t);
-
-        float length = spline.GetLength();
-        float tOffset = lookAheadDistance / length;
-        float targetT = (t + tOffset) % 1f;
-
-        float3 tangent = spline.EvaluateTangent(targetT);
-        float3 up = new float3(0, 1, 0);
-
-        float3 normal = math.normalize(math.cross(up, tangent)); // Vector lateral (la normal a la tangente de la spline)
-
-        if (chaosEnabled)
+        /*
+        if (!car.isGrounded)
         {
-            currentChaosValue = chaosValue;
+            car.Drive(0f, 0f);
+            return;
         }
-        else
+        */
+
+        if (car.isGrounded)
         {
-            currentChaosValue = 0;
+            var spline = splineContainer.Spline;
+            SplineUtility.GetNearestPoint(spline, splineContainer.transform.InverseTransformPoint(transform.position), out float3 nearestLocal, out float t);
+
+            float length = spline.GetLength();
+            float tOffset = lookAheadDistance / length;
+            float targetT = (t + tOffset) % 1f;
+
+            float3 tangent = spline.EvaluateTangent(targetT);
+            float3 up = new float3(0, 1, 0);
+
+            float3 normal = math.normalize(math.cross(up, tangent)); // Vector lateral (la normal a la tangente de la spline)
+
+            if (chaosEnabled)
+            {
+                currentChaosValue = chaosValue;
+            }
+            else
+            {
+                currentChaosValue = 0;
+            }
+
+            float chaos = Mathf.Sin(Time.time * 2f + chaosSeed) * currentChaosValue; // Se agrega ruido en forma sinusoidal para generar 'caos' en el trayecto del carro
+
+            if (changeLineEnabled)
+            {
+                currentChangeLineChanceValue = changeLineChanceValue;
+            }
+            else
+            {
+                currentChangeLineChanceValue = 0;
+            }
+
+            if (Random.value < currentChangeLineChanceValue)
+            {
+                laneOffset = Random.Range(-maxLaneOffset, maxLaneOffset); // Hay cierta probabilidad de que se recalcule el carril
+            }
+
+
+            float3 targetLocalPos = spline.EvaluatePosition(targetT);
+            float3 offsetLocalPos = targetLocalPos + normal * (laneOffset + chaos);
+            Vector3 targetWorldPos = splineContainer.transform.TransformPoint(offsetLocalPos);
+
+            Vector3 relativeTarget = transform.InverseTransformPoint(targetWorldPos);
+
+            float steerInput = relativeTarget.x / relativeTarget.magnitude;
+
+            car.Drive(1f, steerInput);
+
+            Debug.DrawLine(transform.position, targetWorldPos, Color.green);
         }
 
-        float chaos = Mathf.Sin(Time.time * 2f + chaosSeed) * currentChaosValue; // Se agrega ruido en forma sinusoidal para generar 'caos' en el trayecto del carro
-
-        if (changeLineEnabled)
-        {
-            currentChangeLineChanceValue = changeLineChanceValue;
-        }
-        else
-        {
-            currentChangeLineChanceValue = 0;
-        }
-
-        if (Random.value < currentChangeLineChanceValue)
-        {
-            laneOffset = Random.Range(-maxLaneOffset, maxLaneOffset); // Hay cierta probabilidad de que se recalcule el carril
-        }
-
-
-        float3 targetLocalPos = spline.EvaluatePosition(targetT);
-        float3 offsetLocalPos = targetLocalPos + normal * (laneOffset + chaos);
-        Vector3 targetWorldPos = splineContainer.transform.TransformPoint(offsetLocalPos);
-
-        Vector3 relativeTarget = transform.InverseTransformPoint(targetWorldPos);
-
-        float steerInput = relativeTarget.x / relativeTarget.magnitude;
-
-        car.Drive(1f, steerInput);
-
-        Debug.DrawLine(transform.position, targetWorldPos, Color.green);
+        
     }
 
     public void OnCarCollision(Collision collision)
