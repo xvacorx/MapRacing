@@ -20,6 +20,13 @@ public class ArcadeCar : MonoBehaviour
     public float maxAcceleration = 125f;
     public float minTurnSpeed = 120f;
     public float maxTurnSpeed = 300f;
+
+    [Header("Ground Check")]
+    public Transform groundCheckPoint;
+    public float groundCheckRadius = 0.3f;
+    public LayerMask groundLayer;
+    public bool isGrounded;
+
     private void Start()
     {
         if (randomStats)
@@ -45,19 +52,25 @@ public class ArcadeCar : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (rb.linearVelocity.magnitude < topSpeed)
-        {
-            rb.AddForce(transform.forward * currentAccel * acceleration, ForceMode.Acceleration);
-        }
+        CheckGround();
 
-        if (rb.linearVelocity.magnitude > 0.5f)
+        if (isGrounded)
         {
-            float turn = currentSteer * turnSpeed * Time.fixedDeltaTime;
-            rb.MoveRotation(rb.rotation * Quaternion.Euler(0, turn, 0));
-        }
+            if (rb.linearVelocity.magnitude < topSpeed)
+            {
+                rb.AddForce(transform.forward * currentAccel * acceleration, ForceMode.Acceleration);
+            }
 
-        Vector3 lateralVel = transform.right * Vector3.Dot(rb.linearVelocity, transform.right);
-        rb.AddForce(-lateralVel * 10f, ForceMode.Acceleration);
+            if (rb.linearVelocity.magnitude > 0.5f)
+            {
+                float turn = currentSteer * turnSpeed * Time.fixedDeltaTime;
+                rb.MoveRotation(rb.rotation * Quaternion.Euler(0, turn, 0));
+            }
+
+            Vector3 lateralVel = transform.right * Vector3.Dot(rb.linearVelocity, transform.right);
+            rb.AddForce(-lateralVel * 10f, ForceMode.Acceleration);
+        }
+              
 
         if (rb.position.y < -20f)
         {
@@ -83,5 +96,10 @@ public class ArcadeCar : MonoBehaviour
                 Debug.Log("Choque");
             }
         }
+    }
+
+    private void CheckGround()
+    {
+        isGrounded = Physics.CheckSphere(groundCheckPoint.position, groundCheckRadius, groundLayer);
     }
 }
