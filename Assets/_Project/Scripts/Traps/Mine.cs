@@ -40,6 +40,15 @@ public class MineTrap : MonoBehaviour
             {
                 rb.linearVelocity = Vector3.zero;
                 rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, upwardModifier, ForceMode.Impulse);
+                
+                rb.AddTorque(Random.insideUnitSphere * 1000f, ForceMode.Impulse); // prueba para ver que los autos giren en el aire
+
+                Vector3 torque = rb.transform.right * 1600f;
+                rb.AddTorque(torque, ForceMode.Impulse);
+
+                Vector3 torque2 = rb.transform.right * 800f;
+                rb.AddTorque(torque2, ForceMode.Impulse);
+
             }
         }
 
