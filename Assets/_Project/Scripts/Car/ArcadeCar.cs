@@ -11,6 +11,9 @@ public class ArcadeCar : MonoBehaviour
     private float currentSteer;
     private float currentAccel;
 
+    private RigidbodyConstraints groundedConstraints;
+    private float angularDampingOriginal;
+
     [Header("Randomize Stats")]
     public bool randomStats = false;
 
@@ -42,6 +45,9 @@ public class ArcadeCar : MonoBehaviour
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.linearDamping = 1f;
         rb.angularDamping = 2f;
+
+        groundedConstraints = rb.constraints; // Estado original de las constraints
+        angularDampingOriginal = rb.angularDamping;
     }
 
     public void Drive(float accel, float steer)
@@ -53,6 +59,7 @@ public class ArcadeCar : MonoBehaviour
     void FixedUpdate()
     {
         CheckGround();
+        UpdateConstraints();
 
         if (isGrounded)
         {
@@ -93,7 +100,6 @@ public class ArcadeCar : MonoBehaviour
             if (ai != null)
             {
                 ai.OnCarCollision(collision);
-                Debug.Log("Choque");
             }
         }
     }
@@ -101,5 +107,19 @@ public class ArcadeCar : MonoBehaviour
     private void CheckGround()
     {
         isGrounded = Physics.CheckSphere(groundCheckPoint.position, groundCheckRadius, groundLayer);
+    }
+
+    private void UpdateConstraints()
+    {
+        if (isGrounded)
+        {        
+            rb.constraints = groundedConstraints; // en el suelo: congelar X y Z
+            rb.angularDamping = angularDampingOriginal;
+        }
+        else
+        {           
+            rb.constraints = RigidbodyConstraints.None; // en el aire: permitir rotaciones libres
+            rb.angularDamping = 0f;
+        }
     }
 }
